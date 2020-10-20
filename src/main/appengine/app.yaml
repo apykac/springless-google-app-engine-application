@@ -1,0 +1,6 @@
+runtime: java11
+instance_class: B1
+manual_scaling:
+  instances: 1
+service: pipeline
+entrypoint: java -Xms250M -Xmx250M -noverify -jar springless-app-engine-application-0-0-3-snapshot.jar
