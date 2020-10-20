@@ -146,6 +146,53 @@ public class ClassPathResourcesUtil {
         return s.replace("/", "").replace("\\", "");
     }
 
+    public static List<String> getDirectoryFiles(String resourceRelatedFilePath) {
+        try {
+            Enumeration<URL> urlEnumeration = ClassPathResourcesUtil.class.getClassLoader().getResources(resourceRelatedFilePath);
+            List<String> result = new ArrayList<>();
+            while (urlEnumeration.hasMoreElements()) {
+                result.addAll(getDirectoryFiles(urlEnumeration.nextElement()));
+            }
+            return result;
+        } catch (Exception e) {
+            throw new ResourceResolveException("Can't get content from recourse: "
+                    + resourceRelatedFilePath + " cause: " + e.getMessage(), e);
+        }
+    }
+
+    private static List<String> getDirectoryFiles(URL url) throws IOException, URISyntaxException {
+        switch (url.getProtocol()) {
+            case "jar":
+                return getJarFileDirectoryFiles(url);
+            case "file":
+                return getFileDirectoryFiles(url);
+            default:
+                return Collections.emptyList();
+        }
+    }
+
+    private static List<String> getJarFileDirectoryFiles(URL url) throws IOException {
+        JarURLConnection urlcon = (JarURLConnection) (url.openConnection());
+        List<String> contents = new ArrayList<>();
+        try (JarFile jarFile = urlcon.getJarFile()) {
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                contents.add(entry.getName());
+            }
+        }
+        return contents;
+    }
+
+    private static List<String> getFileDirectoryFiles(URL url) throws IOException, URISyntaxException {
+        List<File> files = files(new File(url.toURI()));
+        List<String> contents = new ArrayList<>();
+        for (File file : files) {
+            contents.add(file.getPath());
+        }
+        return contents;
+    }
+
     private static class InputStreamWrapper extends InputStream {
         private final ByteArrayInputStream inputStream;
 

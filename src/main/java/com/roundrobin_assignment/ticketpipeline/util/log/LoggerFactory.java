@@ -1,7 +1,9 @@
 package com.roundrobin_assignment.ticketpipeline.util.log;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Environment;
+
 public class LoggerFactory {
-    private static LogLevel logLevel = LogLevel.TRACE;
+    private static LogLevel logLevel = Environment.getProp("log.logLevel", LogLevel.TRACE, LogLevel.class);
 
     private LoggerFactory() {
     }

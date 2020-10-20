@@ -2,6 +2,8 @@ package com.roundrobin_assignment.ticketpipeline.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.util.CollectionUtils;
 
 import java.io.IOException;
@@ -12,10 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
+@Component
 public class RestClient implements RestOperations {
     private final java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder().build();
     private final ObjectMapper objectMapper;
 
+    @Constructor
     public RestClient(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }

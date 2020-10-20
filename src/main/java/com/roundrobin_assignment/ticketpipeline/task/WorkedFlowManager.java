@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.task;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.config.context.Environment;
 import com.roundrobin_assignment.ticketpipeline.flow.FlowId;
 
@@ -8,9 +10,11 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Component
 public class WorkedFlowManager {
     private final Map<FlowId, FlowThreadContainer> workedFlows = new EnumMap<>(FlowId.class);
 
+    @Constructor
     public WorkedFlowManager() {
         Arrays.asList(FlowId.values()).forEach(flowId ->
                 workedFlows.put(flowId, new FlowThreadContainer(Environment.getProp(flowId.name() + ".thread-count", 1, Integer.class)))

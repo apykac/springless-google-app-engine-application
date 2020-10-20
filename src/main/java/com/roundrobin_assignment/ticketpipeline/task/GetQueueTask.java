@@ -1,5 +1,8 @@
 package com.roundrobin_assignment.ticketpipeline.task;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
+import com.roundrobin_assignment.ticketpipeline.config.context.Destroy;
 import com.roundrobin_assignment.ticketpipeline.config.context.Environment;
 import com.roundrobin_assignment.ticketpipeline.dao.QueueDao;
 import com.roundrobin_assignment.ticketpipeline.domain.QWork;
@@ -18,7 +21,7 @@ import java.util.concurrent.Executors;
 import static com.roundrobin_assignment.ticketpipeline.flow.FlowId.GET_Q_QUEUE_HANDLER;
 import static com.roundrobin_assignment.ticketpipeline.util.CollectionUtils.notEmpty;
 
-
+@Component
 public class GetQueueTask implements Task {
     private static final Logger LOG = LoggerFactory.getLogger(GetQueueTask.class);
     private static final FlowId FLOW_ID = GET_Q_QUEUE_HANDLER;
@@ -31,7 +34,10 @@ public class GetQueueTask implements Task {
     private final WorkedFlowManager workedFlowManager;
     private final ExecutorService executorService;
 
+    private boolean isStop = false;
 
+
+    @Constructor
     public GetQueueTask(QueueDao queueDao, FlowElementStore flowElementStore, WorkedFlowManager workedFlowManager) {
         this.queueDao = queueDao;
         this.flowElementStore = flowElementStore;
@@ -41,9 +47,9 @@ public class GetQueueTask implements Task {
 
     @Override
     public void run() {
-        LOG.debug("Run GetQueueTask");
+        LOG.trace("Run GetQueueTask");
         QWork qWork;
-        while (!workedFlowManager.isMax(GET_Q_QUEUE_HANDLER) && (qWork = getQWork()) != null) {
+        while (!workedFlowManager.isMax(GET_Q_QUEUE_HANDLER) && (qWork = getQWork()) != null && !isStop) {
             executorService.execute(new GetQQueueHandlerFlow(flowElementStore, workedFlowManager.addFlow(GET_Q_QUEUE_HANDLER), qWork));
         }
     }
@@ -65,7 +71,9 @@ public class GetQueueTask implements Task {
     }
 
     @Override
+    @Destroy
     public void destroy() {
+        isStop = true;
         executorService.shutdown();
     }
 

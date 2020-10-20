@@ -1,5 +1,8 @@
 package com.roundrobin_assignment.ticketpipeline.flow.element;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +10,11 @@ import java.util.Optional;
 
 import static com.roundrobin_assignment.ticketpipeline.util.Assert.notNull;
 
+@Component
 public class FlowElementStore {
     private final Map<FlowElementId, FlowElement<?, ?>> flowElementMap;
 
+    @Constructor
     public FlowElementStore(List<FlowElement<?, ?>> flowElements) {
         this.flowElementMap = flowElements.stream()
                 .collect(() -> new HashMap<>((int) Math.min(flowElements.size() / 0.75, 16), 1),

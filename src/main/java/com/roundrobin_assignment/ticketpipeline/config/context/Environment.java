@@ -14,6 +14,7 @@ public class Environment {
         try {
             Properties properties = new Properties();
             properties.load(ClassPathResourcesUtil.getFileInputStream("application.properties"));
+            properties.load(ClassPathResourcesUtil.getFileInputStream("application-private.properties"));
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 System.setProperty(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
             }
@@ -24,57 +25,6 @@ public class Environment {
 
     private Environment() {
     }
-
-//    public static <T> T getProperty(String propertyName, T defaultValue, Class<T> clazz) {
-//        T propertyValue = getProperty(propertyName, clazz);
-//        return propertyValue == null ? defaultValue : propertyValue;
-//    }
-//
-//    public static <T> T getProperty(String propertyName, Class<T> clazz) {
-//        String propertyValue = getProperty(propertyName);
-//        if (clazz == LogLevel.class) {
-//            return (T) LogLevel.getLogLevel(propertyValue);
-//        } else {
-//            throw new ClassCastException("Can't get property by class: " + (clazz == null ? null : clazz.getName()));
-//        }
-//    }
-//
-//    public static int getProperty(String propertyName, int defaultValue) {
-//        String propertyValue = getProperty(propertyName);
-//        return propertyValue == null ? defaultValue : Integer.parseInt(propertyValue);
-//    }
-//
-//    public static String getProperty(String propertyName, String defaultValue) {
-//        String propertyValue = getProperty(propertyName);
-//        return propertyValue == null ? defaultValue : propertyValue;
-//    }
-//
-//    public static String getProperty(String propertyName) {
-//        return System.getProperty(propertyName);
-//    }
-//
-//    public static <T> T getEnv(String propertyName, T defaultValue, Class<T> clazz) {
-//        T propertyValue = getEnv(propertyName, clazz);
-//        return propertyValue == null ? defaultValue : propertyValue;
-//    }
-//
-//    public static <T> T getEnv(String propertyName, Class<T> clazz) {
-//        String propertyValue = getEnv(propertyName);
-//        if (clazz == LogLevel.class) {
-//            return (T) LogLevel.getLogLevel(propertyValue);
-//        } else {
-//            throw new ClassCastException("Can't get property by class: " + (clazz == null ? null : clazz.getName()));
-//        }
-//    }
-//
-//    public static String getEnv(String envName, String defaultValue) {
-//        String envValue = getEnv(envName);
-//        return envValue == null ? defaultValue : envValue;
-//    }
-//
-//    public static String getEnv(String envName) {
-//        return System.getenv(envName);
-//    }
 
     public static Map<String, String> getEnvMap() {
         return System.getenv();

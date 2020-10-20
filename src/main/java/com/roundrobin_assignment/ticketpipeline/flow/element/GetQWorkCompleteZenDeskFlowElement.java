@@ -1,16 +1,20 @@
 package com.roundrobin_assignment.ticketpipeline.flow.element;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.dao.QueueDao;
 import com.roundrobin_assignment.ticketpipeline.domain.TicketListHandleReport;
 import com.roundrobin_assignment.ticketpipeline.util.StringUtils;
 import com.roundrobin_assignment.ticketpipeline.util.log.Logger;
 import com.roundrobin_assignment.ticketpipeline.util.log.LoggerFactory;
 
+@Component
 public class GetQWorkCompleteZenDeskFlowElement implements FlowElement<TicketListHandleReport, TicketListHandleReport> {
     private static final Logger LOG = LoggerFactory.getLogger(GetQWorkCompleteZenDeskFlowElement.class);
 
     private final QueueDao queueDao;
 
+    @Constructor
     public GetQWorkCompleteZenDeskFlowElement(QueueDao queueDao) {
         this.queueDao = queueDao;
     }

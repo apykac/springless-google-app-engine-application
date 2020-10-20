@@ -1,6 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.util.log;
 
 public class LogLevel implements Comparable<LogLevel> {
+    public static final LogLevel OFF = new LogLevel(0);
     public static final LogLevel ERROR = new LogLevel(1);
     public static final LogLevel WARN = new LogLevel(2);
     public static final LogLevel INFO = new LogLevel(3);
@@ -15,6 +16,8 @@ public class LogLevel implements Comparable<LogLevel> {
         }
 
         switch (name.toLowerCase()) {
+            case "off":
+                return OFF;
             case "error":
                 return ERROR;
             case "warn":

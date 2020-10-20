@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.flow.element;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.domain.QWork;
 import com.roundrobin_assignment.ticketpipeline.domain.TaskStatus;
 import com.roundrobin_assignment.ticketpipeline.domain.TicketList;
@@ -10,11 +12,13 @@ import com.roundrobin_assignment.ticketpipeline.util.CryptUtil;
 import com.roundrobin_assignment.ticketpipeline.util.log.Logger;
 import com.roundrobin_assignment.ticketpipeline.util.log.LoggerFactory;
 
+@Component
 public class GetTicketListZenDeskFlowElement implements FlowElement<QWork, TicketListHandleReport> {
     private static final Logger LOG = LoggerFactory.getLogger(GetTicketListZenDeskFlowElement.class);
 
     private final RestOperations zenDeskRestClient;
 
+    @Constructor
     public GetTicketListZenDeskFlowElement(RestOperations zenDeskRestClient) {
         this.zenDeskRestClient = zenDeskRestClient;
     }

@@ -1,7 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.roundrobin_assignment.ticketpipeline.config.Context;
+import com.roundrobin_assignment.ticketpipeline.config.context.Context;
 
 public class StringUtils {
     private StringUtils() {
@@ -18,15 +18,21 @@ public class StringUtils {
         return s == null || s.isEmpty();
     }
 
-    public static String toJson(Object o) {
-        if (o == null) {
-            return null;
-        } else {
-            try {
-                return Context.getObjectMapper().writeValueAsString(o);
-            } catch (JsonProcessingException e) {
-                return String.valueOf(o);
+    public static boolean hasText(CharSequence str) {
+        return (str != null && str.length() > 0 && containsText(str));
+    }
+
+    public static boolean hasText(String str) {
+        return (str != null && !str.isEmpty() && containsText(str));
+    }
+
+    private static boolean containsText(CharSequence str) {
+        int strLen = str.length();
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return true;
             }
         }
+        return false;
     }
 }

@@ -32,6 +32,8 @@ public class GetQQueueHandlerFlow implements Flow {
 
     @Override
     public void run() {
+        Runtime runtime = Runtime.getRuntime();
+        LOG.warn("MEMORY USAGE: {}Mb", () -> (runtime.maxMemory() - runtime.freeMemory()) / 1024 / 1024);
         try {
             LOG.debug("Start GET_TICKET_LIST_ZEN_DESK flowStep");
 
@@ -47,7 +49,8 @@ public class GetQQueueHandlerFlow implements Flow {
 
             TicketListHandleReport getQWorkCompleteZenDeskResult = getQWorkCompleteZenDesk.doFlowStep(processTicketListZenDeskResult);
 
-            LOG.debug("End GET_Q_WORK_COMPLETE_ZEN_DESK flowStep: {}", () -> getQWorkCompleteZenDeskResult);
+            LOG.debug("End GET_Q_WORK_COMPLETE_ZEN_DESK flowStep");
+            LOG.trace("after GET_Q_WORK_COMPLETE_ZEN_DESK flowStep: {}", () -> getQWorkCompleteZenDeskResult);
 
             clean(getQWorkCompleteZenDeskResult);
             qWork = null;
@@ -55,6 +58,7 @@ public class GetQQueueHandlerFlow implements Flow {
         } catch (Exception e) {
             workedFlowManager.removeFlow(getFlowId());
         }
+        LOG.warn("MEMORY USAGE: {}Mb", () -> (runtime.maxMemory() - runtime.freeMemory()) / 1024 / 1024);
     }
 
     @Override

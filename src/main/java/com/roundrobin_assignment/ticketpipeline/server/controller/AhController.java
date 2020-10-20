@@ -1,15 +1,17 @@
 package com.roundrobin_assignment.ticketpipeline.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roundrobin_assignment.ticketpipeline.config.Context;
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
+import com.roundrobin_assignment.ticketpipeline.config.context.Context;
+import com.roundrobin_assignment.ticketpipeline.config.context.Init;
 
+@Component
 public class AhController extends AbstractController {
+    @Constructor
     public AhController(ObjectMapper objectMapper) {
         super(objectMapper);
-
-        hello();
-        ahStart();
-        ahStop();
+//        init();
     }
 
     void hello() {
@@ -24,12 +26,19 @@ public class AhController extends AbstractController {
         getEntryPoint("/_ah/stop", (request, params) -> {
             new Thread(() -> {
                 try {
-                    Context.close();
+                    Context.stop();
                 } finally {
                     System.exit(0);
                 }
             }).start();
             return null;
         });
+    }
+
+    @Init(1)
+    public void init() {
+        hello();
+        ahStart();
+        ahStop();
     }
 }

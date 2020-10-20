@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.jdbc;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.dao.RowMapper;
 import com.roundrobin_assignment.ticketpipeline.exception.JdbcRuntimeException;
 import com.roundrobin_assignment.ticketpipeline.jdbc.datacource.DataSource;
@@ -12,11 +14,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class JdbcOperationsImpl implements JdbcOperations {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcOperationsImpl.class);
 
     private final DataSource dataSource;
 
+    @Constructor
     public JdbcOperationsImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }

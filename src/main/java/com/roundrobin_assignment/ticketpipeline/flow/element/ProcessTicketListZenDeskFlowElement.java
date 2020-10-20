@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.flow.element;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.dao.QueueDao;
 import com.roundrobin_assignment.ticketpipeline.domain.QWork;
 import com.roundrobin_assignment.ticketpipeline.domain.Status;
@@ -14,11 +16,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
 public class ProcessTicketListZenDeskFlowElement implements FlowElement<TicketListHandleReport, TicketListHandleReport> {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessTicketListZenDeskFlowElement.class);
 
     private final QueueDao queueDao;
 
+    @Constructor
     public ProcessTicketListZenDeskFlowElement(QueueDao queueDao) {
         this.queueDao = queueDao;
     }

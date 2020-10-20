@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.dao;
 
+import com.roundrobin_assignment.ticketpipeline.config.context.Component;
+import com.roundrobin_assignment.ticketpipeline.config.context.Constructor;
 import com.roundrobin_assignment.ticketpipeline.domain.QWork;
 import com.roundrobin_assignment.ticketpipeline.jdbc.JdbcOperations;
 import com.roundrobin_assignment.ticketpipeline.util.log.Logger;
@@ -12,11 +14,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class QueueDaoImpl implements QueueDao {
     private static final Logger LOG = LoggerFactory.getLogger(QueueDaoImpl.class);
 
     private final JdbcOperations jdbcOperations;
 
+    @Constructor
     public QueueDaoImpl(JdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
     }
