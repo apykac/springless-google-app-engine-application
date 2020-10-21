@@ -1,7 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.roundrobin_assignment.ticketpipeline.config.context.Context;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class StringUtils {
     private StringUtils() {
@@ -34,5 +34,11 @@ public class StringUtils {
             }
         }
         return false;
+    }
+
+    public static String exceptionToString(Throwable t) {
+        StringWriter writer = new StringWriter();
+        t.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 }

@@ -1,68 +1,82 @@
 package com.roundrobin_assignment.ticketpipeline.flow;
 
 
+import com.roundrobin_assignment.ticketpipeline.clean.Cleanable;
 import com.roundrobin_assignment.ticketpipeline.domain.QWork;
 import com.roundrobin_assignment.ticketpipeline.domain.TicketListHandleReport;
 import com.roundrobin_assignment.ticketpipeline.flow.element.FlowElement;
 import com.roundrobin_assignment.ticketpipeline.flow.element.FlowElementId;
 import com.roundrobin_assignment.ticketpipeline.flow.element.FlowElementStore;
-import com.roundrobin_assignment.ticketpipeline.task.WorkedFlowManager;
+import com.roundrobin_assignment.ticketpipeline.task.GetQWorkQueue;
 import com.roundrobin_assignment.ticketpipeline.util.log.Logger;
 import com.roundrobin_assignment.ticketpipeline.util.log.LoggerFactory;
 
-import static com.roundrobin_assignment.ticketpipeline.flow.FlowId.GET_Q_QUEUE_HANDLER;
-
-public class GetQQueueHandlerFlow implements Flow {
+public class GetQQueueHandlerFlow extends Thread {
     private static final Logger LOG = LoggerFactory.getLogger(GetQQueueHandlerFlow.class);
 
     private final FlowElement<QWork, TicketListHandleReport> getTicketListZenDesk;
     private final FlowElement<TicketListHandleReport, TicketListHandleReport> processTicketListZenDesk;
     private final FlowElement<TicketListHandleReport, TicketListHandleReport> getQWorkCompleteZenDesk;
-    private final WorkedFlowManager workedFlowManager;
+    private final GetQWorkQueue getQWorkQueue;
 
-    private QWork qWork;
+    private boolean stop = false;
+    private boolean isFinished = false;
 
-    public GetQQueueHandlerFlow(FlowElementStore flowElementStore, WorkedFlowManager workedFlowManager, QWork qWork) {
+    public GetQQueueHandlerFlow(FlowElementStore flowElementStore, GetQWorkQueue getQWorkQueue) {
         this.getTicketListZenDesk = flowElementStore.getFlowElement(FlowElementId.GET_TICKET_LIST_ZEN_DESK);
         this.processTicketListZenDesk = flowElementStore.getFlowElement(FlowElementId.PROCESS_TICKET_LIST_ZEN_DESK);
         this.getQWorkCompleteZenDesk = flowElementStore.getFlowElement(FlowElementId.GET_Q_WORK_COMPLETE_ZEN_DESK);
-        this.workedFlowManager = workedFlowManager;
-        this.qWork = qWork;
+        this.getQWorkQueue = getQWorkQueue;
     }
 
     @Override
     public void run() {
-        Runtime runtime = Runtime.getRuntime();
-        LOG.warn("MEMORY USAGE: {}Mb", () -> (runtime.maxMemory() - runtime.freeMemory()) / 1024 / 1024);
-        try {
-            LOG.debug("Start GET_TICKET_LIST_ZEN_DESK flowStep");
+        while (!stop) {
+            try {
+                LOG.debug("Start retrieve QWork flowStep");
 
-            TicketListHandleReport getTicketListZenDeskResult = getTicketListZenDesk.doFlowStep(qWork);
+                QWork qWork = getQWorkQueue.getQWork();
 
-            LOG.debug("End GET_TICKET_LIST_ZEN_DESK flowStep");
-            LOG.debug("Start PROCESS_TICKET_LIST_ZEN_DESK flowStep");
+                LOG.debug("Start GET_TICKET_LIST_ZEN_DESK flowStep");
 
-            TicketListHandleReport processTicketListZenDeskResult = processTicketListZenDesk.doFlowStep(getTicketListZenDeskResult);
+                TicketListHandleReport getTicketListZenDeskResult = getTicketListZenDesk.doFlowStep(qWork);
 
-            LOG.debug("End PROCESS_TICKET_LIST_ZEN_DESK flowStep");
-            LOG.debug("Start GET_Q_WORK_COMPLETE_ZEN_DESK flowStep");
+                LOG.debug("End GET_TICKET_LIST_ZEN_DESK flowStep");
+                LOG.debug("Start PROCESS_TICKET_LIST_ZEN_DESK flowStep");
 
-            TicketListHandleReport getQWorkCompleteZenDeskResult = getQWorkCompleteZenDesk.doFlowStep(processTicketListZenDeskResult);
+                TicketListHandleReport processTicketListZenDeskResult = processTicketListZenDesk.doFlowStep(getTicketListZenDeskResult);
 
-            LOG.debug("End GET_Q_WORK_COMPLETE_ZEN_DESK flowStep");
-            LOG.trace("after GET_Q_WORK_COMPLETE_ZEN_DESK flowStep: {}", () -> getQWorkCompleteZenDeskResult);
+                LOG.debug("End PROCESS_TICKET_LIST_ZEN_DESK flowStep");
+                LOG.debug("Start GET_Q_WORK_COMPLETE_ZEN_DESK flowStep");
 
-            clean(getQWorkCompleteZenDeskResult);
-            qWork = null;
-            workedFlowManager.removeFlow(getFlowId());
-        } catch (Exception e) {
-            workedFlowManager.removeFlow(getFlowId());
+                TicketListHandleReport getQWorkCompleteZenDeskResult = getQWorkCompleteZenDesk.doFlowStep(processTicketListZenDeskResult);
+
+                LOG.debug("End GET_Q_WORK_COMPLETE_ZEN_DESK flowStep");
+                LOG.trace("after GET_Q_WORK_COMPLETE_ZEN_DESK flowStep: {}", () -> getQWorkCompleteZenDeskResult);
+
+                clean(getQWorkCompleteZenDeskResult);
+            } catch (Exception e) {
+                LOG.error("Error during GetQQueueHandlerFlow: {}", () -> e);
+            }
         }
-        LOG.warn("MEMORY USAGE: {}Mb", () -> (runtime.maxMemory() - runtime.freeMemory()) / 1024 / 1024);
+        isFinished = true;
+    }
+
+    private void clean(Cleanable... cleanables) {
+        if (cleanables != null && cleanables.length != 0) {
+            for (int i = 0; i < cleanables.length; i++) {
+                cleanables[i].clean();
+                cleanables[i] = null;
+            }
+        }
+    }
+
+    public boolean isFinished() {
+        return isFinished;
     }
 
     @Override
-    public FlowId getFlowId() {
-        return GET_Q_QUEUE_HANDLER;
+    public void interrupt() {
+        stop = true;
     }
 }

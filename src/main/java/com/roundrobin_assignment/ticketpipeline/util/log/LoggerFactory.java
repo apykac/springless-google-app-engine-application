@@ -8,6 +8,10 @@ public class LoggerFactory {
     private LoggerFactory() {
     }
 
+    public static LogLevel getLogLevel() {
+        return logLevel;
+    }
+
     public static void setLogLevel(LogLevel logLevel) {
         LoggerFactory.logLevel = logLevel == null ? LoggerFactory.logLevel : logLevel;
     }

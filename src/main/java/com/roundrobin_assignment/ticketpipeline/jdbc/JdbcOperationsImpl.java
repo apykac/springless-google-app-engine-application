@@ -36,7 +36,7 @@ public class JdbcOperationsImpl implements JdbcOperations {
             }
             return result;
         } catch (Exception e) {
-            LOG.error("Exception during call: {}; cause: {}", () -> sql, e::getMessage, () -> e);
+            LOG.error("Exception during call: {}; cause: {}", () -> sql, () -> e);
             throw new JdbcRuntimeException(e);
         }
     }
@@ -58,7 +58,7 @@ public class JdbcOperationsImpl implements JdbcOperations {
                 return i;
             }
         } catch (Exception e) {
-            LOG.error("Exception during call: {}; cause: {}", () -> sql, e::getMessage, () -> e);
+            LOG.error("Exception during call: {}; cause: {}", () -> sql, () -> e);
             throw new JdbcRuntimeException(e);
         }
     }

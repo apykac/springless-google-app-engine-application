@@ -29,8 +29,8 @@ public class GetTicketListZenDeskFlowElement implements FlowElement<QWork, Ticke
     }
 
     @Override
-    public TicketListHandleReport doFlowStep(QWork qWork) {
-        return qWork == null ? null : getTicketList(qWork);
+    public TicketListHandleReport doFlowStep(QWork income) {
+        return income == null ? null : getTicketList(income);
     }
 
     private TicketListHandleReport getTicketList(QWork qWork) {
@@ -42,7 +42,7 @@ public class GetTicketListZenDeskFlowElement implements FlowElement<QWork, Ticke
             ResponseEntity<TicketList> response = zenDeskRestClient.getToObjectBasicAuth(url, user, pwd, TicketList.class);
             return fromResponse(response, qWork);
         } catch (Exception e) {
-            LOG.error("Error during call ZenDesk url: {}, cause: {}", () -> url, e::getMessage, () -> e);
+            LOG.error("Error during call ZenDesk url: {}, cause: {}", () -> url, () -> e);
             return fromException(e, qWork);
         }
     }

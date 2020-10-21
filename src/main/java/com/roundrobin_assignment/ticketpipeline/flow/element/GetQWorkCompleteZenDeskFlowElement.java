@@ -35,15 +35,15 @@ public class GetQWorkCompleteZenDeskFlowElement implements FlowElement<TicketLis
     private void getQWorkComplete(TicketListHandleReport report) {
         try {
             queueDao.getQWorkComplete(
-                    report.getGetTask().getId(),
+                    report.getId(),
                     report.getProcessTicketCount(),
                     report.getProcessTicketErrors(),
-                    report.getTicketList().getNextPage(),
+                    report.getNextPage(),
                     report.getStatus().getValue(),
                     report.getErrorCode(),
                     StringUtils.left(report.getErrorMessage(), 255));
         } catch (Exception e) {
-            LOG.error("Error during call pGetQWorkComplite(): {}", e::getMessage, () -> e);
+            LOG.error("Error during call pGetQWorkComplite(): {}", () -> e);
             LOG.trace("Error during call pGetQWorkComplite(): entity: {}", () -> report);
         }
     }

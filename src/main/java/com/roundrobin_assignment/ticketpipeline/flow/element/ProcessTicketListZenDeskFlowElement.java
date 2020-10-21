@@ -41,7 +41,7 @@ public class ProcessTicketListZenDeskFlowElement implements FlowElement<TicketLi
     }
 
     private void processTicketList(TicketListHandleReport ticketListHandleReport) {
-        List<Ticket> tickets = ticketListHandleReport.getTicketList().getTickets();
+        List<Ticket> tickets = ticketListHandleReport.getTickets();
         if (tickets == null || tickets.isEmpty()) {
             LOG.trace("Tickets id empty in: {}", () -> ticketListHandleReport);
             return;
@@ -85,7 +85,7 @@ public class ProcessTicketListZenDeskFlowElement implements FlowElement<TicketLi
                     qWork.getGetQType());
             ticketCounter.successTicket();
         } catch (Exception e) {
-            LOG.error("Error during call pProcessTicket(): {}", e::getMessage, () -> e);
+            LOG.error("Error during call pProcessTicket(): {}", () -> e);
             LOG.trace("Error during call pProcessTicket(): entity: {}, {}", () -> qWork, () -> ticket);
             ticketCounter.errorTicket();
         }

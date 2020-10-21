@@ -1,6 +1,5 @@
 package com.roundrobin_assignment.ticketpipeline.config.context;
 
-import com.roundrobin_assignment.ticketpipeline.Application;
 import com.roundrobin_assignment.ticketpipeline.config.context.init.ComponentCollector;
 import com.roundrobin_assignment.ticketpipeline.config.context.init.ComponentInitializer;
 import com.roundrobin_assignment.ticketpipeline.config.context.init.ConfigurationCollector;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Context {
-    private static final Logger LOG = LoggerFactory.getLogger(Application.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
     private static final Map<String, BeanModel> BEAN_MODEL_MAP = new HashMap<>();
 

@@ -1,5 +1,7 @@
 package com.roundrobin_assignment.ticketpipeline.util.log;
 
+import com.roundrobin_assignment.ticketpipeline.util.StringUtils;
+
 import java.util.function.Supplier;
 
 public class DefaultImpl implements Logger {
@@ -76,7 +78,12 @@ public class DefaultImpl implements Logger {
         Object[] objects = new Object[suppliers.length];
         int index = 0;
         for (Supplier<?> supplier : suppliers) {
-            objects[index++] = supplier.get();
+            Object o = supplier.get();
+            if (o instanceof Throwable) {
+                objects[index++] = StringUtils.exceptionToString((Throwable) o);
+            } else {
+                objects[index++] = o;
+            }
         }
         return objects;
     }

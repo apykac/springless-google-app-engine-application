@@ -3,4 +3,4 @@ instance_class: B1
 manual_scaling:
   instances: 1
 service: pipeline
-entrypoint: java -Xmx250M -XX:+UseSerialGC -jar springless-app-engine-application-0-0-3-snapshot.jar
+entrypoint: java -Xmx220M -XX:+UseSerialGC -jar springless-app-engine-application-0-0-3-snapshot.jar

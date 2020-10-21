@@ -1,6 +1,6 @@
 package com.roundrobin_assignment.ticketpipeline.exception;
 
-public class JdbcRuntimeException extends RuntimeException{
+public class JdbcRuntimeException extends RuntimeException {
     public JdbcRuntimeException() {
     }
 

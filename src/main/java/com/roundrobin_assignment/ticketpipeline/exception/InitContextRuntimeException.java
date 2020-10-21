@@ -1,6 +1,6 @@
 package com.roundrobin_assignment.ticketpipeline.exception;
 
-public class InitContextRuntimeException extends RuntimeException{
+public class InitContextRuntimeException extends RuntimeException {
     public InitContextRuntimeException() {
     }
 

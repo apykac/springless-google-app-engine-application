@@ -3,6 +3,9 @@ package com.roundrobin_assignment.ticketpipeline.domain;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.roundrobin_assignment.ticketpipeline.clean.Cleanable;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,12 +18,24 @@ public class TicketListHandleReport implements Cleanable {
     private Integer errorCode;
     private String errorMessage; //varchar(255)
 
-    public TicketList getTicketList() {
-        return ticketList;
+    public String getNextPage() {
+        return ticketList == null ? null : ticketList.getNextPage();
+    }
+
+    public BigInteger getId() {
+        return qWork == null ? null : qWork.getId();
+    }
+
+    public List<Ticket> getTickets() {
+        if (ticketList == null) {
+            return Collections.emptyList();
+        } else {
+            return ticketList.getTickets() == null ? Collections.emptyList() : ticketList.getTickets();
+        }
     }
 
     public QWork getGetTask() {
-        return qWork;
+        return qWork == null ? new QWork() : qWork;
     }
 
     public int getProcessTicketCount() {

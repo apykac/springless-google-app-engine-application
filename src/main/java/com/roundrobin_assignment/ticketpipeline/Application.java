@@ -9,14 +9,14 @@ import com.roundrobin_assignment.ticketpipeline.util.log.LoggerFactory;
  * Hello world!
  */
 public class Application {
-    private static final Logger LOG = LoggerFactory.getLogger(Application.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         LOG.info("Starting setup application...");
         try {
             Context.init(Application.class.getPackageName());
         } catch (InitContextRuntimeException e) {
-            LOG.error("Exception during init context: {}", e::getMessage, () -> e);
+            LOG.error("Exception during init context: {}", () -> e);
             com.roundrobin_assignment.ticketpipeline.config.context.Context.stop();
             throw e;
         }

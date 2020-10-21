@@ -1,6 +1,6 @@
 package com.roundrobin_assignment.ticketpipeline.exception;
 
-public class RestClientException extends RuntimeException{
+public class RestClientException extends RuntimeException {
     public RestClientException() {
     }
 

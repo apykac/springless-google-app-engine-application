@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.home</groupId>
+    <groupId>org.simple</groupId>
     <artifactId>springless-app-engine-application</artifactId>
     <version>0-0-3-snapshot</version>
 

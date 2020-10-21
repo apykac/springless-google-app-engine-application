@@ -1,14 +1,15 @@
 package com.roundrobin_assignment.ticketpipeline.util.log;
 
 public class LogLevel implements Comparable<LogLevel> {
-    public static final LogLevel OFF = new LogLevel(0);
-    public static final LogLevel ERROR = new LogLevel(1);
-    public static final LogLevel WARN = new LogLevel(2);
-    public static final LogLevel INFO = new LogLevel(3);
-    public static final LogLevel DEBUG = new LogLevel(4);
-    public static final LogLevel TRACE = new LogLevel(5);
+    public static final LogLevel OFF = new LogLevel(0, "OFF");
+    public static final LogLevel ERROR = new LogLevel(1, "ERROR");
+    public static final LogLevel WARN = new LogLevel(2, "WARN");
+    public static final LogLevel INFO = new LogLevel(3, "INFO");
+    public static final LogLevel DEBUG = new LogLevel(4, "DEBUG");
+    public static final LogLevel TRACE = new LogLevel(5, "TRACE");
 
     private final int width;
+    private final String name;
 
     public static LogLevel getLogLevel(String name) {
         if (name == null) {
@@ -33,8 +34,13 @@ public class LogLevel implements Comparable<LogLevel> {
         }
     }
 
-    public LogLevel(int width) {
+    public String getName() {
+        return name;
+    }
+
+    private LogLevel(int width, String name) {
         this.width = width;
+        this.name = name;
     }
 
     public boolean isEnabled(LogLevel logLevel) {

@@ -52,7 +52,7 @@ public class QueueDaoImpl implements QueueDao {
             LOG.trace("Result of pGetQWork(): {}", () -> qWorkList.stream().map(String::valueOf).collect(Collectors.joining(", ")));
             return qWorkList;
         } catch (Exception e) {
-            LOG.error("Error during call pGetQWork(): {}", e::getMessage, () -> e);
+            LOG.error("Error during call pGetQWork(): {}", () -> e);
             return Collections.emptyList();
         }
     }
