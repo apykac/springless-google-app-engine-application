@@ -9,6 +9,7 @@ import com.roundrobin_assignment.ticketpipeline.domain.TicketListHandleReport;
 import com.roundrobin_assignment.ticketpipeline.net.ResponseEntity;
 import com.roundrobin_assignment.ticketpipeline.net.RestOperations;
 import com.roundrobin_assignment.ticketpipeline.util.CryptUtil;
+import com.roundrobin_assignment.ticketpipeline.util.StringUtils;
 import com.roundrobin_assignment.ticketpipeline.util.log.Logger;
 import com.roundrobin_assignment.ticketpipeline.util.log.LoggerFactory;
 
@@ -61,6 +62,6 @@ public class GetTicketListZenDeskFlowElement implements FlowElement<QWork, Ticke
         return new TicketListHandleReport()
                 .setGetTask(qWork)
                 .setStatus(TaskStatus.ERROR)
-                .setErrorMessage(e.getMessage());
+                .setErrorMessage(StringUtils.exceptionToString(e));
     }
 }

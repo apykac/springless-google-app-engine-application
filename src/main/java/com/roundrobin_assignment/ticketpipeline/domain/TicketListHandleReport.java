@@ -2,6 +2,7 @@ package com.roundrobin_assignment.ticketpipeline.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.roundrobin_assignment.ticketpipeline.clean.Cleanable;
+import com.roundrobin_assignment.ticketpipeline.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class TicketListHandleReport implements Cleanable {
     }
 
     public String getErrorMessage() {
-        return errorMessage;
+        return StringUtils.left(errorMessage, 255);
     }
 
     public TicketListHandleReport setTicketList(TicketList ticketList) {
