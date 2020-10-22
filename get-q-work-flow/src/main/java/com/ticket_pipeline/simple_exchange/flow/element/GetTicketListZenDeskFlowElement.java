@@ -54,6 +54,7 @@ public class GetTicketListZenDeskFlowElement implements FlowElement<QWork, Ticke
             LOG.error("ZenDesk return: {} code", response::getCode);
             return result
                     .setErrorCode(response.getCode())
+                    .setErrorMessage(response.getBody().getError())
                     .setStatus(TaskStatus.ERROR);
         }
         return result.setTicketList(response.getBody());

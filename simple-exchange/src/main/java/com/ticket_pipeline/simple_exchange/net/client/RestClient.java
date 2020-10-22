@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class RestClient implements RestOperations {
@@ -51,10 +50,6 @@ public class RestClient implements RestOperations {
 
     private <T> ResponseEntity<T> getResponseEntity(HttpResponse<String> response, Class<T> responseType) throws JsonProcessingException {
         HttpCode httpCode = HttpCode.getHttpCode(response.statusCode());
-        if (Objects.equals(httpCode, HttpCode.OK)) {
-            return new ResponseEntity<>(objectMapper.readValue(response.body(), responseType), response.statusCode(), httpCode);
-        } else {
-            return new ResponseEntity<>(null, response.statusCode(), httpCode);
-        }
+        return new ResponseEntity<>(objectMapper.readValue(response.body(), responseType), response.statusCode(), httpCode);
     }
 }

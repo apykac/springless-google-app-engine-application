@@ -13,6 +13,7 @@ import java.util.Objects;
 public class TicketList implements Cleanable {
     private List<Ticket> tickets;
     private String nextPage; //varchar(255)
+    private String error;
 
     @JsonProperty("tickets")
     public List<Ticket> getTickets() {
@@ -24,6 +25,11 @@ public class TicketList implements Cleanable {
         return nextPage;
     }
 
+    @JsonProperty("error")
+    public String getError() {
+        return error;
+    }
+
     public TicketList setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
         return this;
@@ -31,6 +37,11 @@ public class TicketList implements Cleanable {
 
     public TicketList setNextPage(String nextPage) {
         this.nextPage = nextPage;
+        return this;
+    }
+
+    public TicketList setError(String error) {
+        this.error = error;
         return this;
     }
 
