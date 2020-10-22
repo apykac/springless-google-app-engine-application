@@ -38,7 +38,13 @@ public class GetQQueueHandlerFlow extends Thread {
 
                 qWorkWrapper.qWork = getQWorkQueue.getQWork();
 
+                if (qWorkWrapper.qWork == null) {
+                    pause();
+                    continue;
+                }
+
                 LOG.debug("Start GET_TICKET_LIST_ZEN_DESK flowStep");
+                LOG.trace("Start GET_TICKET_LIST_ZEN_DESK flowStep: entity: {}", () -> qWorkWrapper.qWork);
 
                 TicketListHandleReport getTicketListZenDeskResult = getTicketListZenDesk.doFlowStep(qWorkWrapper.qWork);
 
@@ -61,6 +67,14 @@ public class GetQQueueHandlerFlow extends Thread {
             }
         }
         isFinished = true;
+    }
+
+    private void pause() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            //nothing
+        }
     }
 
     private void clean(Cleanable... cleanables) {
