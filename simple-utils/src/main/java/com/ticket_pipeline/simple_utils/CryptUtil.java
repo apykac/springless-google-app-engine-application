@@ -40,6 +40,8 @@ import java.util.Date;
  * It also expects that a single pass phrase will have been used.
  */
 public class CryptUtil {
+    private static final char[] KEY = "{{Client.crypt_key}}".toCharArray();
+
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -48,44 +50,46 @@ public class CryptUtil {
     }
 
     public static String encode(String data) {
-        char[] passArray = "{{Client.crypt_key}}".toCharArray();
-        byte[] original = null;
-
+        byte[] original;
         if (StringUtils.isEmpty(data)) {
             original = "".getBytes();
         } else {
             original = data.getBytes();
         }
+
         try {
             return new String(org.bouncycastle.util.encoders.Hex.encode(
-                    encrypt(original, passArray, "iway", SymmetricKeyAlgorithmTags.TRIPLE_DES, false)));
+                    encrypt(original, KEY, "iway", SymmetricKeyAlgorithmTags.TRIPLE_DES, false)
+            ));
         } catch (Exception e) {
             return data;
         }
     }
 
     public static String decode(String encryptedHex) {
-        char[] passArray = "{{Client.crypt_key}}".toCharArray();
         try {
-            return new String(decrypt(org.bouncycastle.util.encoders.Hex.decode(encryptedHex), passArray), StandardCharsets.UTF_8);
+            return new String(decrypt(org.bouncycastle.util.encoders.Hex.decode(encryptedHex), KEY), StandardCharsets.UTF_8);
         } catch (Exception e) {
             return encryptedHex;
         }
     }
-
 
     /**
      * decrypt the passed in message stream
      *
      * @param encrypted  The message to be decrypted.
      * @param passPhrase Pass phrase (key)
-     * @return Clear text as a byte array. I18N considerations are not handled by this routine
+     * @return Clear text as a byte array. I18N considerations are
+     * not handled by this routine
      */
     public static byte[] decrypt(byte[] encrypted, char[] passPhrase) throws IOException, PGPException {
-        JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(PGPUtil.getDecoderStream(new ByteArrayInputStream(encrypted)));
-        Object o = pgpF.nextObject();
+        InputStream in = new ByteArrayInputStream(encrypted);
 
+        in = PGPUtil.getDecoderStream(in);
+
+        JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(in);
         PGPEncryptedDataList enc;
+        Object o = pgpF.nextObject();
         if (o instanceof PGPEncryptedDataList) {
             enc = (PGPEncryptedDataList) o;
         } else {
@@ -93,17 +97,20 @@ public class CryptUtil {
         }
 
         PGPPBEEncryptedData pbe = (PGPPBEEncryptedData) enc.get(0);
+
         InputStream clear = pbe.getDataStream(
-                new JcePBEDataDecryptorFactoryBuilder
-                        (new JcaPGPDigestCalculatorProviderBuilder()
+                new JcePBEDataDecryptorFactoryBuilder(
+                        new JcaPGPDigestCalculatorProviderBuilder()
                                 .setProvider("BC")
                                 .build())
                         .setProvider("BC")
                         .build(passPhrase));
+
         JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory(clear);
         PGPCompressedData cData = (PGPCompressedData) pgpFact.nextObject();
         pgpFact = new JcaPGPObjectFactory(cData.getDataStream());
         PGPLiteralData ld = (PGPLiteralData) pgpFact.nextObject();
+
         return Streams.readAll(ld.getInputStream());
     }
 
@@ -124,60 +131,54 @@ public class CryptUtil {
      *                   MIME type, if applicable. Or anything else appropriate.
      * @return encrypted data.
      */
-    public static byte[] encrypt(byte[] clearData, char[] passPhrase, String fileName, int algorithm, boolean armor)
-            throws IOException, PGPException {
+    public static byte[] encrypt(byte[] clearData, char[] passPhrase, String fileName, int algorithm, boolean armor) throws IOException, PGPException {
         if (fileName == null) {
             fileName = PGPLiteralData.CONSOLE;
         }
 
-        byte[] compressedData = compress(clearData, fileName);
+        byte[] compressedData = compress(clearData, fileName, CompressionAlgorithmTags.ZIP);
 
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+
+        OutputStream out = bOut;
+        if (armor) {
+            out = new ArmoredOutputStream(out);
+        }
 
         PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(new JcePGPDataEncryptorBuilder(algorithm).setSecureRandom(new SecureRandom()).setProvider("BC"));
         encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase).setProvider("BC"));
 
-        OutputStream out = getArmoredOutputStream(bOut, armor);
-        try (OutputStream encOut = encGen.open(out, compressedData.length)) {
-            encOut.write(compressedData);
+        OutputStream encOut = encGen.open(out, compressedData.length);
+
+        encOut.write(compressedData);
+        encOut.close();
+
+        if (armor) {
+            out.close();
         }
-        closeArmoredOutputStream(out, armor);
 
         return bOut.toByteArray();
     }
 
-    private static OutputStream getArmoredOutputStream(ByteArrayOutputStream bOut, boolean armor) {
-        if (armor) {
-            return new ArmoredOutputStream(bOut);
-        } else {
-            return bOut;
-        }
-    }
-
-    private static void closeArmoredOutputStream(OutputStream out, boolean armor) throws IOException {
-        if (armor) {
-            out.close();
-        }
-    }
-
-    private static byte[] compress(byte[] clearData, String fileName) throws IOException {
+    private static byte[] compress(byte[] clearData, String fileName, int algorithm) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(CompressionAlgorithmTags.ZIP);
-        try {
-            // we want to generate compressed data. This might be a user option later,
-            // in which case we would pass in bOut.
-            try (OutputStream pOut = new PGPLiteralDataGenerator().open(
-                    comData.open(bOut), // the compressed output stream,  open it with the final destination
-                    PGPLiteralData.BINARY,
-                    fileName,  // "filename" to store
-                    clearData.length, // length of clear data
-                    new Date()  // current time
-            )) {
-                pOut.write(clearData);
-            }
-        } finally {
-            comData.close();
-        }
+        PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(algorithm);
+        OutputStream cos = comData.open(bOut); // open it with the final destination
+
+        PGPLiteralDataGenerator lData = new PGPLiteralDataGenerator();
+
+        // we want to generate compressed data. This might be a user option later,
+        // in which case we would pass in bOut.
+        OutputStream pOut = lData.open(cos, // the compressed output stream
+                PGPLiteralData.BINARY,
+                fileName,  // "filename" to store
+                clearData.length, // length of clear data
+                new Date()  // current time
+        );
+
+        pOut.write(clearData);
+        pOut.close();
+        comData.close();
 
         return bOut.toByteArray();
     }
